@@ -27,7 +27,10 @@ to install:
 - Copy the nvim folder from this project into $HOME\AppData\Local\ folder
 
     ```powershell
-    cp .\nvim ~\AppData\Local\ -Recurse`
+    git clone https://github.com/LukasMarsch/infinity-nvim.git;
+    $nvim_path = "~\AppData\Local\nvim"
+    mkdir $nvim_path;
+    mv .\infinity-nvim\. $nvim_path -Recurse
     ```
 
 - Install [Plug Package Manager](https://github.com/junegunn/vim-plug#windows-powershell-1) for Neovim 
