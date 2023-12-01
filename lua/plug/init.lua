@@ -14,5 +14,6 @@ call plug#begin(stdpath('data') . '/plugged')
 	Plug 'hrsh7th/cmp-nvim-lsp'
 	Plug 'L3MON4D3/LuaSnip'
 	Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v2.x'}
+    Plug 'm4xshen/autoclose.nvim'
 call plug#end()
 ]]
