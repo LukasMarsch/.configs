@@ -1,5 +1,6 @@
 require('remap')
 require('plug')
+require("autoclose").setup()
 
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -162,4 +163,83 @@ require('catppuccin').setup {
 
 vim.cmd("colorscheme catppuccin")
 
+
+local lsp = require('lsp-zero')
+lsp.preset('recommended')
+
+lsp.ensure_installed({
+	'rust_analyzer',
+})
+
+local cmp =  require('cmp')
+local cmp_select = {behavior = cmp.SelectBehavior.Select}
+local cmp_mappings = lsp.defaults.cmp_mappings({
+	['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+	['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+	['<C-y>'] = cmp.mapping.confirm({select = true}),
+	['<C-Space>'] = cmp.mapping.complete(),
+})
+
+lsp.setup_nvim_cmp({
+	mapping = cmp_mappings
+})
+
+lsp.on_attach(function(client, bufnr)
+local opts = {buffer = bufnr, remap = false}
+
+vim.keymap.set('n', 'gd', function() vim.lsp.buf.definition() end, opts)
+vim.keymap.set('n', 'K', function() vim.lsp.buf.hover() end, opts)
+vim.keymap.set('n', '<leader>vws', function() vim.lsp.buf.workspace_symbol() end, opts)
+vim.keymap.set('n', '<leader>vd', function() vim.diagnostic.open_float() end, opts)
+vim.keymap.set('n', '[d', function() vim.diagnostic.goto_next() end, opts)
+vim.keymap.set('n', ']d', function() vim.diagnostic.goto_prev() end, opts)
+vim.keymap.set('n', '<leader>vca', function() vim.lsp.buf.code_action() end, opts)
+vim.keymap.set('n', '<leader>vrr', function() vim.lsp.buf.references() end, opts)
+vim.keymap.set('n', '<leader>vrn', function() vim.lsp.buf.rename() end, opts)
+vim.keymap.set('i', '<C-h>', function() vim.lsp.buf.signature_help() end, opts)
+end)
+
+lsp.setup()
+
+vim.cmd [[
+call plug#begin(stdpath('data') . '/plugged')
+	Plug 'nvim-telescope/telescope.nvim'
+	Plug 'nvim-lua/plenary.nvim'
+	Plug 'nvim-tree/nvim-web-devicons'
+	Plug 'nvim-lualine/lualine.nvim'
+	Plug 'nvim-treesitter/nvim-treesitter'
+	Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
+	Plug 'nvim-treesitter/playground'
+	Plug 'neovim/nvim-lspconfig'
+	Plug 'williamboman/mason.nvim', {'do': ':MasonUpdate'}
+	Plug 'williamboman/mason-lspconfig.nvim'
+	Plug 'hrsh7th/nvim-cmp'
+	Plug 'hrsh7th/cmp-nvim-lsp'
+	Plug 'L3MON4D3/LuaSnip'
+	Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v2.x'}
+    Plug 'm4xshen/autoclose.nvim'
+call plug#end()
+]]
+
+vim.g.mapleader = ' '
+vim.keymap.set('n', '<leader>pv', vim.cmd.Ex)
+
+-- telescope
+vim.keymap.set('n', '<leader>ff', '<cmd>lua require("telescope.builtin").find_files()<cr>')
+vim.keymap.set('n', '<leader>fg', '<cmd>lua require("telescope.builtin").live_grep()<cr>')
+vim.keymap.set('n', '<leader>fb', '<cmd>lua require("telescope.builtin").buffers()<cr>')
+vim.keymap.set('n', '<leader>fh', '<cmd>lua require("telescope.builtin").help_tags()<cr>')
+
+-- move ops
+vim.keymap.set('v', "J", ":m '>+1<cr>gv=gv")
+vim.keymap.set('v', "K", ":m '<-2<cr>gv=gv")
+vim.keymap.set('n', '<C-s>', ':w<cr>')
+
+-- jumping
+vim.keymap.set('n', '<C-u>', '<C-u>z.')
+vim.keymap.set('n', '<C-d>', '<C-d>z.')
+
+-- searching
+vim.keymap.set('n', 'n', 'nzzzv')
+vim.keymap.set('n', 'N', 'Nzzzv')
 
