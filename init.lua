@@ -1,6 +1,22 @@
-require('remap')
-require('plug')
-require("autoclose").setup()
+vim.cmd [[
+call plug#begin(stdpath('data') . '/plugged')
+	Plug 'nvim-telescope/telescope.nvim'
+	Plug 'nvim-lua/plenary.nvim'
+	Plug 'nvim-tree/nvim-web-devicons'
+	Plug 'nvim-lualine/lualine.nvim'
+	Plug 'nvim-treesitter/nvim-treesitter'
+	Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
+	Plug 'nvim-treesitter/playground'
+	Plug 'neovim/nvim-lspconfig'
+	Plug 'williamboman/mason.nvim', {'do': ':MasonUpdate'}
+	Plug 'williamboman/mason-lspconfig.nvim'
+	Plug 'hrsh7th/nvim-cmp'
+	Plug 'hrsh7th/cmp-nvim-lsp'
+	Plug 'L3MON4D3/LuaSnip'
+	Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v2.x'}
+    Plug 'm4xshen/autoclose.nvim'
+call plug#end()
+]]
 
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -118,6 +134,7 @@ highlight = {
 	},
 }
 
+require('autoclose').setup()
 
 local lsp = require('lsp-zero').preset({})
 lsp.on_attach(function(client, bufnr)
@@ -200,26 +217,6 @@ vim.keymap.set('i', '<C-h>', function() vim.lsp.buf.signature_help() end, opts)
 end)
 
 lsp.setup()
-
-vim.cmd [[
-call plug#begin(stdpath('data') . '/plugged')
-	Plug 'nvim-telescope/telescope.nvim'
-	Plug 'nvim-lua/plenary.nvim'
-	Plug 'nvim-tree/nvim-web-devicons'
-	Plug 'nvim-lualine/lualine.nvim'
-	Plug 'nvim-treesitter/nvim-treesitter'
-	Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
-	Plug 'nvim-treesitter/playground'
-	Plug 'neovim/nvim-lspconfig'
-	Plug 'williamboman/mason.nvim', {'do': ':MasonUpdate'}
-	Plug 'williamboman/mason-lspconfig.nvim'
-	Plug 'hrsh7th/nvim-cmp'
-	Plug 'hrsh7th/cmp-nvim-lsp'
-	Plug 'L3MON4D3/LuaSnip'
-	Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v2.x'}
-    Plug 'm4xshen/autoclose.nvim'
-call plug#end()
-]]
 
 vim.g.mapleader = ' '
 vim.keymap.set('n', '<leader>pv', vim.cmd.Ex)
