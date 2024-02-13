@@ -2,6 +2,8 @@ Set-Alias vim nvim
 Set-Alias dn dotnet
 Set-Alias stop Measure-Command
 Write-Host $(Get-Date -Format 'dddd HH:mm:ss tt')
+Import-Module posh-sshell
+Start-SshAgent -Quiet
 
 function prompt {
     $cw = Get-ColorWheel 
