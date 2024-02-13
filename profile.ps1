@@ -23,6 +23,10 @@ function prompt {
     Write-Host ""-ForegroundColor $ColorChanger -BackgroundColor "#45475A" -NoNewline
     Write-Host " \$CmdPromptCurrentFolder "  -ForegroundColor White -BackgroundColor "#45475A" -NoNewline
     Write-Host "" -ForegroundColor "#45475A" -BackgroundColor "#1E222A" -NoNewline
+    $branch = get-gitbranch
+    if($branch) {
+            Write-Host "[$branch]" -ForegroundColor "cyan" -BackgroundColor "#1E222A" -NoNewLine
+        }
 
     return " "
 }
@@ -72,3 +76,6 @@ function edge ([String][Parameter(Position=0)] $path) {
     Start-Process microsoft-edge:$path
 }
 
+function Get-GitBranch () {
+        return git branch --show-current
+    }
