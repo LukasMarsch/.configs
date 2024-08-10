@@ -42,6 +42,10 @@ function elevate {
     Start-Process alacritty -Verb RunAs
 }
 
+function cd.. {
+        cd ..
+    }
+
 function google ([String][Parameter(Position=0)] $sTerm) {
     if($sTerm) { $sTerm = "/search?q=" + $sTerm}
     else { $sTerm = $null }
@@ -72,6 +76,7 @@ function repo {
 
     if($in -eq "1") { cd -Path "C:\Users\lmarsch\Repositories" }
     elseif($in -eq "2") { cd -Path "C:\Users\lmarsch\OneDrive - Vater Unternehmensgruppe\Ausbildung\Repositories" }
+    elseif($in -eq "3") { cd -Path "H:\Projekte"}
 }
 
 function edge ([String][Parameter(Position=0)] $path) {
@@ -81,3 +86,39 @@ function edge ([String][Parameter(Position=0)] $path) {
 function Get-GitBranch () {
         return git branch --show-current
     }
+
+function Set-Timer ([String][Parameter(Position=0)] $time) {
+        $timer = $time.Split(':');
+        $sets = $timer.Length;
+
+#        switch($sets) {
+#                1: //second
+#                2: //minutes-seconds
+#                3: //hours-minutes-seconds
+#            }
+    }
+
+function Get-PathVariable {
+    return [System.Environment]::GetEnvironmentVariable("PATH") -split ";"
+}
+
+function Set-PathVariable {
+    param (
+        [String] $AddPath,
+        [String] $RemovePath,
+        [ValidateSet('Process','User','Machine')] [String] $Scope = 'Process'
+    )
+    $regexPaths = @()
+    if($PSBoundParameters.Keys -contains 'AddPath') {
+        $regexPaths += [regex]::Escape($AddPath)
+    }
+    if($PSBoundParameters.Keys -contains 'RemovePath') {
+        $regexPaths += [regex]::Escape($RemovePath)
+    }
+    $arrPath = Get-PathVariable
+    foreach($path in $regexPaths) {
+        $arrPath = $arrPath | Where-Object { $_ -notMatch "^$path\\?" }
+    }
+    $value = ($arrPath + $addPath) -join ";"
+    [System.Environment]::SetEnvironmentVariable("PATH", $value, $Scope)
+}
