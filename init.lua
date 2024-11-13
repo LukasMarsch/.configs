@@ -50,19 +50,56 @@ vim.cmd[[
 	set shellquote= shellxquote=
 ]]
 
-require('nvim-web-devicons').setup {
-	r_icons = true;
-	default = true;
-	strict = true;
+require('mason').setup({})
+require('mason-lspconfig').setup({
+    ensure_installed = {'lua_ls', 'rust_analyzer'},
+    handlers = {
+        function(server_name)
+            require('lspconfig')[server_name].setup({})
+        end,
+    }
+})
 
-	override_by_filename = {
-		[".gitignore"] = {
-		icon = "",
-		color = "#f1502f",
-		name = "Gitignore"
-		}
-	};
-}
+local lsp_zero = require('lsp-zero').preset({})
+local lsp_attach = function(client, bufnr)
+    lsp_zero.default_keymaps({buffer = bufnr})
+end
+
+lsp_zero.extend_lspconfig({
+    capabilitites = require('cmp_nvim_lsp').default_capabilities(),
+    lsp_attach = lsp_attach,
+    float_border = 'rounded',
+    sign_text = true,
+})
+
+local cmp =  require('cmp')
+local cmp_select = {behavior = cmp.SelectBehavior.Select}
+local cmp_mappings = lsp_zero.defaults.cmp_mappings({
+	['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+	['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+	['<C-y>'] = cmp.mapping.confirm({select = true}),
+	['<C-Space>'] = cmp.mapping.complete(),
+})
+
+lsp_zero.setup_nvim_cmp({
+	mapping = cmp_mappings
+})
+
+lsp_zero.on_attach(function(client, bufnr)
+    local opts = {buffer = bufnr, remap = false}
+    vim.keymap.set('n', 'gd', function() vim.lsp.buf.definition() end, opts)
+    vim.keymap.set('n', 'K', function() vim.lsp.buf.hover() end, opts)
+    vim.keymap.set('n', '<leader>vws', function() vim.lsp.buf.workspace_symbol() end, opts)
+    vim.keymap.set('n', '<leader>vd', function() vim.diagnostic.open_float() end, opts)
+    vim.keymap.set('n', '[d', function() vim.diagnostic.goto_next() end, opts)
+    vim.keymap.set('n', ']d', function() vim.diagnostic.goto_prev() end, opts)
+    vim.keymap.set('n', '<leader>vca', function() vim.lsp.buf.code_action() end, opts)
+    vim.keymap.set('n', '<leader>vrr', function() vim.lsp.buf.references() end, opts)
+    vim.keymap.set('n', '<leader>vrn', function() vim.lsp.buf.rename() end, opts)
+    vim.keymap.set('i', '<C-h>', function() vim.lsp.buf.signature_help() end, opts)
+end)
+
+lsp_zero.setup()
 
 require('lualine').setup {
 	options = {
@@ -104,6 +141,7 @@ require('lualine').setup {
 	inactive_winbar = {},
 	extensions = {}
 }
+
 require'nvim-treesitter.configs'.setup {
 -- A list of parser names, or "all" (the five listed parsers should always be installed)
 ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "rust"},
@@ -121,11 +159,11 @@ highlight = {
 	disable = {},
 	-- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
 	disable = function(lang, buf)
-	local max_filesize = 100 * 1024 -- 100 KB
-	local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-	if ok and stats and stats.size > max_filesize then
-	return true
-	end
+        local max_filesize = 100 * 1024 -- 100 KB
+        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+        if ok and stats and stats.size > max_filesize then
+        return true
+        end
 	end,
 	-- Setting this to true will run `:h syntax` and tree-sitter at the same time.
 	-- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
@@ -135,13 +173,6 @@ highlight = {
 }
 
 require('autoclose').setup()
-
-local lsp = require('lsp-zero').preset({})
-lsp.on_attach(function(client, bufnr)
-	lsp.default_keymaps({buffer = bufnr})
-end)
-require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
-lsp.setup()
 
 require('catppuccin').setup {
 	flavour = 'mocha',
@@ -180,43 +211,19 @@ require('catppuccin').setup {
 
 vim.cmd("colorscheme catppuccin")
 
+require('nvim-web-devicons').setup {
+	r_icons = true;
+	default = true;
+	strict = true;
 
-local lsp = require('lsp-zero')
-lsp.preset('recommended')
-
-lsp.ensure_installed({
-	'rust_analyzer',
-})
-
-local cmp =  require('cmp')
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
-local cmp_mappings = lsp.defaults.cmp_mappings({
-	['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-	['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-	['<C-y>'] = cmp.mapping.confirm({select = true}),
-	['<C-Space>'] = cmp.mapping.complete(),
-})
-
-lsp.setup_nvim_cmp({
-	mapping = cmp_mappings
-})
-
-lsp.on_attach(function(client, bufnr)
-local opts = {buffer = bufnr, remap = false}
-
-vim.keymap.set('n', 'gd', function() vim.lsp.buf.definition() end, opts)
-vim.keymap.set('n', 'K', function() vim.lsp.buf.hover() end, opts)
-vim.keymap.set('n', '<leader>vws', function() vim.lsp.buf.workspace_symbol() end, opts)
-vim.keymap.set('n', '<leader>vd', function() vim.diagnostic.open_float() end, opts)
-vim.keymap.set('n', '[d', function() vim.diagnostic.goto_next() end, opts)
-vim.keymap.set('n', ']d', function() vim.diagnostic.goto_prev() end, opts)
-vim.keymap.set('n', '<leader>vca', function() vim.lsp.buf.code_action() end, opts)
-vim.keymap.set('n', '<leader>vrr', function() vim.lsp.buf.references() end, opts)
-vim.keymap.set('n', '<leader>vrn', function() vim.lsp.buf.rename() end, opts)
-vim.keymap.set('i', '<C-h>', function() vim.lsp.buf.signature_help() end, opts)
-end)
-
-lsp.setup()
+	override_by_filename = {
+		[".gitignore"] = {
+		icon = "",
+		color = "#f1502f",
+		name = "Gitignore"
+		}
+	};
+}
 
 vim.g.mapleader = ' '
 vim.keymap.set('n', '<leader>pv', vim.cmd.Ex)
