@@ -1,8 +1,13 @@
+Set-Alias curl Invoke-RestMethod
 Set-Alias vim nvim
 Set-Alias dn dotnet
 Set-Alias stop Measure-Command
+Set-Alias rmrf Remove-ItemRecureForce
+Set-Alias weather Get-Weather
 Write-Host $(Get-Date -Format 'dddd HH:mm:ss tt')
 Import-Module posh-sshell
+Import-Module 'C:\Users\lmarsch\Repositories\.configs\Get-FileMetaDataReturnObject.ps1'
+Import-Module 'C:\Users\lmarsch\Repositories\.configs\Get-FileMetadata.psm1'
 Start-SshAgent -Quiet
 
 function prompt {
@@ -98,6 +103,41 @@ function Set-Timer ([String][Parameter(Position=0)] $time) {
 #            }
     }
 
+function Get-Weather {
+    param(
+        [String][Parameter(Position=0)] $days,
+        [String][Parameter(Position=1)] $city,
+        [Switch] $n,
+        [Switch] $q,
+        [Switch] $qq,
+        [Switch] $Help,
+        [Switch] $h
+    )
+    if($h -or $Help) {
+        Write-Host "\t [String][Position=1] days \t\tTage vorraus zu sehen"
+        Write-Host "\t [String][Position=0] city \t\tZielstadt"
+        return;
+    }
+    $request = "https://de.wttr.in/" + $city
+    if($days) {
+        if($days -ge 0 && $days -le 2) {
+            $request += "?" + $days
+        }
+    }
+    if($n) {
+        $request += "?n"
+    }
+    if($q) {
+        $request += "?q"
+    }
+    if($qq) {
+        $request += "?Q"
+    }
+
+        $response = Invoke-RestMethod -Uri $request
+        Write-Host $response
+    }
+
 function Get-PathVariable {
     return [System.Environment]::GetEnvironmentVariable("PATH") -split ";"
 }
@@ -122,3 +162,10 @@ function Set-PathVariable {
     $value = ($arrPath + $addPath) -join ";"
     [System.Environment]::SetEnvironmentVariable("PATH", $value, $Scope)
 }
+
+function Remove-ItemRecurseForce {
+        param(
+            [Parameter(Mandatory,Position=0)][String] $Path
+        )
+        Remove-Item $Path -Recurse -Force
+    }
