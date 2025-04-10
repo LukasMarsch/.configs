@@ -7,7 +7,7 @@ size = 10.5
 
 [font.normal]
 family = "JetBrainsMono Nerd Font Mono"
-style = "SemiBold"
+style = "Regular"
 
 [font.italic]
 family = "JetBrainsMono Nerd Font Mono"
@@ -17,7 +17,7 @@ style = "MediumItalic"
 family =  "JetBrainsMono Nerd Font Mono"
 style = "ExtraBold"
 
-[shell]
+[terminal.shell]
 program = 'C:\Program Files\PowerShell\7\pwsh.exe'
 
 [window]
@@ -53,3 +53,5 @@ blue    = '#7cafc2'
 magenta = '#ba8baf'
 cyan    = '#86c1b9'
 white   = '#f8f8f8'
+
+[terminal]
