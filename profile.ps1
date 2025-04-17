@@ -28,9 +28,9 @@ function prompt {
     $defaultBackground = (get-host).ui.rawui.BackgroundColor
     Write-Host $os -ForegroundColor $defaultBackground -BackgroundColor $ColorChanger -NoNewline
 
-    Write-Host ""-ForegroundColor $ColorChanger -BackgroundColor $defaultBackground -NoNewline
-    Write-Host " /$CmdPromptCurrentFolder "  -ForegroundColor $defaultForeground -BackgroundColor $defaultBackground -NoNewline
-    Write-Host "" -ForegroundColor $ColorChanger -BackgroundColor $defaultBackground -NoNewline
+    Write-Host ""-ForegroundColor $ColorChanger -BackgroundColor $defaultForeground -NoNewline
+    Write-Host " /$CmdPromptCurrentFolder "  -ForegroundColor $defaultBackground -BackgroundColor $defaultForeground -NoNewline
+    Write-Host "" -ForegroundColor $defaultForeground -BackgroundColor $defaultBackground -NoNewline
     $branch = get-gitbranch
     if($branch) {
             Write-Host "[$branch]" -ForegroundColor "cyan" -BackgroundColor $defaultBackground -NoNewLine
