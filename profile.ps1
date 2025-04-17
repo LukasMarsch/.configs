@@ -1,4 +1,3 @@
-Set-Alias curl Invoke-RestMethod
 Set-Alias vim nvim
 Set-Alias dn dotnet
 Set-Alias stop Measure-Command
@@ -25,14 +24,16 @@ function prompt {
     elseif ($IsLinux) { $os = "  "}
     elseif ($IsMac) { $os = "  " }
 
-    Write-Host $os -ForegroundColor Black -BackgroundColor $ColorChanger -NoNewline
+    $defaultForeground = (get-host).ui.rawui.ForegroundColor
+    $defaultBackground = (get-host).ui.rawui.BackgroundColor
+    Write-Host $os -ForegroundColor $defaultBackground -BackgroundColor $ColorChanger -NoNewline
 
-    Write-Host ""-ForegroundColor $ColorChanger -BackgroundColor "#45475A" -NoNewline
-    Write-Host " \$CmdPromptCurrentFolder "  -ForegroundColor White -BackgroundColor "#45475A" -NoNewline
-    Write-Host "" -ForegroundColor "#45475A" -BackgroundColor "#1E222A" -NoNewline
+    Write-Host ""-ForegroundColor $ColorChanger -BackgroundColor $defaultBackground -NoNewline
+    Write-Host " /$CmdPromptCurrentFolder "  -ForegroundColor $defaultForeground -BackgroundColor $defaultBackground -NoNewline
+    Write-Host "" -ForegroundColor $ColorChanger -BackgroundColor $defaultBackground -NoNewline
     $branch = get-gitbranch
     if($branch) {
-            Write-Host "[$branch]" -ForegroundColor "cyan" -BackgroundColor "#1E222A" -NoNewLine
+            Write-Host "[$branch]" -ForegroundColor "cyan" -BackgroundColor $defaultBackground -NoNewLine
         }
 
     return " "
@@ -92,16 +93,12 @@ function Get-GitBranch () {
         return git branch --show-current
     }
 
-function Set-Timer ([String][Parameter(Position=0)] $time) {
-        $timer = $time.Split(':');
-        $sets = $timer.Length;
-
-#        switch($sets) {
-#                1: //second
-#                2: //minutes-seconds
-#                3: //hours-minutes-seconds
-#            }
-    }
+function Start-Timer ([Double][Parameter(Position=0)] $minutes) {
+    $seconds = $minutes * 60.0d;
+    Start-Sleep -Seconds $seconds;
+    [System.Media.SystemSounds]::Asterisk.Play()
+    Write-Host "Timer over";
+}
 
 function Get-Weather {
     param(
@@ -120,7 +117,7 @@ function Get-Weather {
     }
     $request = "https://de.wttr.in/" + $city
     if($days) {
-        if($days -ge 0 && $days -le 2) {
+        if($days -ge 0 -or $days -le 2) {
             $request += "?" + $days
         }
     }
