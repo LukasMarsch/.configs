@@ -15,6 +15,7 @@ call plug#begin(stdpath('data') . '/plugged')
 	Plug 'L3MON4D3/LuaSnip'
 	Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v2.x'}
     Plug 'm4xshen/autoclose.nvim'
+    Plug 'ThePrimeagen/refactoring.nvim'
 call plug#end()
 ]]
 
@@ -50,10 +51,11 @@ vim.cmd[[
 	set shellquote= shellxquote=
 ]]
 
+require('refactoring').setup()
+
 require('mason').setup({})
 require('mason-lspconfig').setup({
-    ensure_installed = {'lua_ls', 'rust_analyzer'},
-    handlers = {
+   handlers = {
         function(server_name)
             require('lspconfig')[server_name].setup({})
         end,
@@ -142,9 +144,9 @@ require('lualine').setup {
 	extensions = {}
 }
 
-require'nvim-treesitter.configs'.setup {
+require('nvim-treesitter.configs').setup {
 -- A list of parser names, or "all" (the five listed parsers should always be installed)
-ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "rust"},
+ensure_installed = { "c", "lua", "vim", "vimdoc", "query"},
 -- Install parsers synchronously (only applied to `ensure_installed`)
 sync_install = false,
 -- Automatically install missing parsers when entering buffer
@@ -155,7 +157,7 @@ ignore_install = { "javascript" },
 ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
 -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
 highlight = {
-	enable = true,
+	enable = false,
 	disable = {},
 	-- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
 	disable = function(lang, buf)
